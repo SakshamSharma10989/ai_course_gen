@@ -17,13 +17,13 @@ export async function POST(request) {
       );
     }
 
-    // Fetch YouTube videos related to prompt, fallback to empty array on error
+    // 1️⃣ Fetch YouTube videos related to the prompt
     const videos = await fetchYouTubeVideos(prompt).catch((err) => {
       console.error('Video fetch failed:', err.message);
       return [];
     });
 
-    // Construct Gemini prompt string with video info or fallback message
+    // 2️⃣ Build structured Gemini prompt (no need to include thumbnails here)
     const structuredPrompt =
       modulePrompts.getModuleStructure(prompt) +
       (videos.length > 0
@@ -37,21 +37,17 @@ export async function POST(request) {
 
     console.log('Structured Prompt:', structuredPrompt);
 
-    // Generate raw response from Gemini
+    // 3️⃣ Call Gemini API
     const rawContent = await generateGeminiContent(structuredPrompt);
 
-    console.log('Raw Gemini Response:', rawContent);
-
-    // Parse Gemini response safely, handling raw JSON or with markdown fencing removed
+    // 4️⃣ Parse Gemini response safely
     let parsedContent;
     try {
       if (typeof rawContent === 'string') {
-        // Clean rawContent by removing any markdown code fences (``````) if present
         const cleaned = rawContent
-          .replace(/```json/, '') // remove starting code fence
-          .replace(/```$/, '')        // remove ending code fence
+          .replace(/```json/, '')
+          .replace(/```$/, '')
           .trim();
-
         parsedContent = JSON.parse(cleaned);
       } else {
         parsedContent = rawContent;
@@ -61,12 +57,26 @@ export async function POST(request) {
       throw new Error('Invalid JSON response from Gemini');
     }
 
-    // Basic validation of the result structure
+    // 5️⃣ Validate structure
     if (!parsedContent.topic || !Array.isArray(parsedContent.sections)) {
       console.error('Invalid response structure:', parsedContent);
       throw new Error('Invalid response structure from content generation');
     }
 
+    // 6️⃣ Merge YouTube thumbnails into each section
+    if (videos.length > 0) {
+      parsedContent.sections = parsedContent.sections.map((section, index) => {
+        const vid = videos[index] || null;
+        return {
+          ...section,
+          videoUrl: vid?.videoUrl || section.videoUrl || null,
+          videoTitle: vid?.videoTitle || section.videoTitle || null,
+          thumbnail: vid?.thumbnail || null,
+        };
+      });
+    }
+
+    // 7️⃣ Return final content with thumbnails
     return new Response(
       JSON.stringify({ content: parsedContent }),
       {
@@ -74,10 +84,10 @@ export async function POST(request) {
         headers: { 'Content-Type': 'application/json' },
       }
     );
+
   } catch (error) {
     console.error('API error:', error.message);
 
-    // Map known error messages to user-friendly messages and HTTP statuses
     let errorMessage = 'Content generation failed';
     let status = 500;
 
