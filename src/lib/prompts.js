@@ -15,8 +15,13 @@ Each section must be an object with:
 - "videoTitle": the video title or null if none provided
 
 Requirements:
-- Interpret "${topic}" strictly as a programming or computer science concept (e.g., "string" refers to a data type in programming, not musical instruments or other meanings).
-- If YouTube search results are provided, assign only English-language videos relevant to programming or computer science to sections in order (Introduction, Basics, Examples, Summary).
+- Interpret "${topic}" strictly as a programming or computer science concept (e.g., "string" means programming data type, not musical instruments).
+- Only assign a video if it is:
+   1. In English,
+   2. Directly relevant to programming/computer science,
+   3. Matches the section’s purpose (Intro → overview, Basics → fundamentals, Examples → coding demos, Summary → recap).
+- If no valid video is available, return null for "videoUrl" and "videoTitle".
+- Do NOT include any non-programming or irrelevant videos, even if they appear in the search results.
 - Embed any code in "content" as plain text with escaped characters (e.g., \\n for newlines, \\t for tabs).
 - Return only valid JSON in this format:
 {
@@ -28,6 +33,5 @@ Requirements:
     {"title": "Summary", "content": "Text...", "videoUrl": null, "videoTitle": null}
   ]
 }
-- Do not include markdown, backticks, or any text outside the JSON.
 `.trim(),
 };
