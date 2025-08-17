@@ -7,9 +7,8 @@ import Header from '@/components/Header';
 import './globals.css';
 
 export default function RootLayout({ children }) {
-  // Adjust these values if your header or sidebar has different heights/widths!
-  const headerHeight = 48; // px, adjust to your real header height (py-2/2.5 + font size)
-  const sidebarWidth = '16rem'; // 64 * 0.25rem = 16rem for w-64
+  const headerHeight = 48; 
+  const sidebarWidth = '16rem'; 
 
   return (
     <html lang="en">
