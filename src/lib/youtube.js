@@ -13,13 +13,13 @@ export async function fetchYouTubeVideos(topic) {
   const ambiguousTopics = ['string', 'array', 'class', 'object', 'function'];
   const searchQuery = ambiguousTopics.includes(topic.trim().toLowerCase())
     ? `${topic.trim()} programming`
-    : topic.trim();
+    : `${topic.trim()} computer science`;
 
   try {
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
         searchQuery
-      )}&key=${API_KEY}&type=video&maxResults=4&relevanceLanguage=en`,
+      )}&key=${API_KEY}&type=video&maxResults=8&relevanceLanguage=en`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -38,7 +38,22 @@ export async function fetchYouTubeVideos(topic) {
 
     const data = await response.json();
 
-    return data.items.map((item) => ({
+    // Keep videos broadly related to computer science / programming
+    const filtered = data.items.filter((item) => {
+      const title = item.snippet.title.toLowerCase();
+      const description = item.snippet.description?.toLowerCase() || '';
+      const combined = `${title} ${description}`;
+      return (
+        combined.includes('programming') ||
+        combined.includes('computer science') ||
+        combined.includes('software') ||
+        combined.includes('developer') ||
+        combined.includes('coding') ||
+        combined.includes('technology')
+      );
+    });
+
+    return filtered.slice(0, 4).map((item) => ({
       videoUrl: `https://www.youtube.com/watch?v=${item.id.videoId}`,
       videoTitle: item.snippet.title,
       thumbnail: item.snippet.thumbnails.medium.url,

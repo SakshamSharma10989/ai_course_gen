@@ -1,17 +1,14 @@
 @import "tailwindcss";
 
+/* === Root variables === */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* === Dark mode === */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -19,9 +16,15 @@
   }
 }
 
+/* === Global typography === */
+html {
+  font-size: 18px; /* bump base size (default Tailwind is 16px) */
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
-  @apply text-lg; 
+  font-family: var(--font-sans);
+  @apply text-lg leading-relaxed; 
 }
+
