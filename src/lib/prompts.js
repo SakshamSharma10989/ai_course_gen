@@ -2,56 +2,32 @@ export const modulePrompts = {
   getModuleStructure: (topic) => `
 You are a course module generator. Generate a structured learning module for the topic: "${topic}".
 
-The module must include 4 sections:
+The module must include exactly 4 sections:
 1. Introduction
 2. Basics
 3. Examples
 4. Summary
 
 Each section must be an object with:
-- "title": a short title (e.g., "Introduction")
-- "content": a detailed explanation in plain text (NO markdown formatting)
-- "videoUrl": a YouTube video link, or null if none is found
-- "videoTitle": the actual title of the video, or null if none
+- "title": the exact section name ("Introduction", "Basics", "Examples", "Summary")
+- "content": a plain text explanation (100-150 words, no markdown, no backticks)
+- "videoUrl": a YouTube video link or null if none provided
+- "videoTitle": the video title or null if none provided
 
-IMPORTANT:
-- Embed any code as plain text inside the "content" field using escaped characters — DO NOT use triple backticks or markdown.
-- Return ONLY valid JSON in the following format:
-
+Requirements:
+- Interpret "${topic}" strictly as a programming or computer science concept (e.g., "string" refers to a data type in programming, not musical instruments or other meanings).
+- If YouTube search results are provided, assign only English-language videos relevant to programming or computer science to sections in order (Introduction, Basics, Examples, Summary).
+- Embed any code in "content" as plain text with escaped characters (e.g., \\n for newlines, \\t for tabs).
+- Return only valid JSON in this format:
 {
   "topic": "${topic}",
   "sections": [
-    {
-      "title": "Introduction",
-      "content": "Explanation here...",
-      "videoUrl": "https://www.youtube.com/watch?v=...",
-      "videoTitle": "The video title"
-    },
-    {
-      "title": "Basics",
-      "content": "Detailed concepts...",
-      "videoUrl": "https://www.youtube.com/watch?v=...",
-      "videoTitle": "The video title"
-    },
-    {
-      "title": "Examples",
-      "content": "Code examples in escaped form...",
-      "videoUrl": "https://www.youtube.com/watch?v=...",
-      "videoTitle": "The video title"
-    },
-    {
-      "title": "Summary",
-      "content": "Wrap-up and recap...",
-      "videoUrl": null,
-      "videoTitle": null
-    }
+    {"title": "Introduction", "content": "Text...", "videoUrl": null, "videoTitle": null},
+    {"title": "Basics", "content": "Text...", "videoUrl": null, "videoTitle": null},
+    {"title": "Examples", "content": "Text with escaped code...", "videoUrl": null, "videoTitle": null},
+    {"title": "Summary", "content": "Text...", "videoUrl": null, "videoTitle": null}
   ]
 }
-
-⚠️ DO NOT include:
-- Markdown or triple backticks (\`\`\`)
-- Any text, explanation, or commentary before or after the JSON.
-
-Respond with strictly valid JSON only, without any additional formatting or text.
+- Do not include markdown, backticks, or any text outside the JSON.
 `.trim(),
 };

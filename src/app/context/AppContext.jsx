@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect ,useCallback} from 'react';
 
 const AppContext = createContext();
 
@@ -77,38 +77,40 @@ export function AppContextProvider({ children }) {
     }
   };
 
-  // Generate quiz function (for completeness)
-  const generateQuiz = async () => {
-    if (!topic.trim()) {
-      setError('Please enter a topic to proceed.');
-      return;
-    }
+const generateQuiz = useCallback(async () => {
+  if (isLoading) return; // ✅ simple guard
 
-    setError('');
-    setCurrentTopic(topic.trim());
-    setIsLoading(true);
-    setShowQuiz(false);
+  if (!topic.trim()) {
+    setError('Please enter a topic to proceed.');
+    return;
+  }
 
-    try {
-      const res = await fetch('/api/quiz', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic: topic.trim() }),
-      });
+  setError('');
+  setCurrentTopic(topic.trim());
+  setIsLoading(true);
+  setShowQuiz(false);
 
-      const data = await res.json();
+  try {
+    const res = await fetch('/api/quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: topic.trim() }),
+    });
 
-      if (!res.ok) throw new Error(data.message || 'Failed to fetch quiz data.');
+    const data = await res.json();
 
-      setQuizData(data);
-      setShowQuiz(true);
-    } catch (err) {
-      setError(err.message);
-      setQuizData(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    if (!res.ok) throw new Error(data.message || 'Failed to fetch quiz data.');
+
+    setQuizData(data);
+    setShowQuiz(true);
+  } catch (err) {
+    setError(err.message);
+    setQuizData(null);
+  } finally {
+    setIsLoading(false);
+  }
+}, [topic, isLoading]);
+
 
   return (
     <AppContext.Provider

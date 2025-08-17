@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';  // Import Clerk's hook
+import { useUser } from '@clerk/nextjs';
 
 export default function ProfilePage() {
-  const { isLoaded, isSignedIn, user } = useUser(); // Get user info from Clerk
+  const { isLoaded, isSignedIn, user } = useUser();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn || !user) return; // Wait for user to load and be signed in
+    if (!isLoaded || !isSignedIn || !user) return;
 
-    const userId = user.id; // Get the authenticated user's Clerk ID
+    const userId = user.id;
 
     fetch(`/api/profile?userId=${encodeURIComponent(userId)}`)
       .then(res => res.json())
@@ -27,30 +27,33 @@ export default function ProfilePage() {
   if (loading) return <div>Loading your quiz history...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto py-6  text-gray-900">
+    <div className="max-w-3xl mx-auto py-8 px-4 text-gray-900">
+      <h1 className="text-3xl text-teal-700 mb-6 font-bold text-center">
+        Past Quiz Records
+      </h1>
+
       {results.length === 0 ? (
-        <div>No past quiz scores found.</div>
+        <div className="text-center text-gray-600">
+          No past quiz scores found.
+        </div>
       ) : (
-         <div>
-          <h1 className="text-3xl text-teal-700 mb-4 font-bold">Past Quiz Records</h1>
-           <ul>
-      {results.map((result, i) => (
-        <li key={i} className="mb-4 border-b pb-2">
-          <div>
-            <span className="font-semibold">Topic:</span> {result.topic}
-          </div>
-          <div>
-            <span className="font-semibold">Score:</span> {result.score} / {result.totalQuestions}
-          </div>
-          <div className="text-sm text-gray-900">
-            {result.createdAt
-              ? new Date(result.createdAt).toLocaleString()
-              : ""}
-          </div>
-        </li>
-      ))}
-    </ul>
-          </div>
+        <ul className="space-y-4">
+          {results.map((result, i) => (
+            <li
+              key={i}
+              className="p-4 border rounded-xl shadow-sm hover:shadow-md transition"
+            >
+              <div className="text-xl font-semibold text-gray-800">
+                {result.topic ? decodeURIComponent(result.topic) : "Untitled Topic"}
+              </div>
+
+              <div className="mt-2">
+                <span className="font-semibold text-teal-600">Score:</span>{" "}
+                {result.score} / {result.totalQuestions}
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

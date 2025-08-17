@@ -30,7 +30,6 @@ export default function ModulePage() {
   useEffect(() => {
     setLoading(true);
 
-    // Normalize both the topic from URL and topic in context for reliable matching
     const normalizedUrlTopic = decodeURIComponent(topic || '')
       .replace(/-/g, ' ')
       .toLowerCase()
@@ -72,7 +71,7 @@ export default function ModulePage() {
                 <a
                   href={section.videoUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="noopener noreferrer"//for safety reasons 
                   className="block mt-2"
                 >
                   {(section.thumbnail || getYoutubeThumbnail(section.videoUrl)) ? (
@@ -84,12 +83,11 @@ export default function ModulePage() {
                       className="rounded-lg shadow-md hover:opacity-80 transition w-full max-w-md aspect-video object-cover"
                     />
                   ) : (
-                    // Removed "No video available" message per your request; show nothing instead
+                    
                     null
                   )}
                 </a>
               ) : (
-                // Removed the <p> tag for no video as per your request
                 null
               )}
             </article>

@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 export async function connect() {
   if (mongoose.connection.readyState >= 1) {
-    // Already connected
     return;
   }
 

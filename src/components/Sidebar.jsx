@@ -54,12 +54,6 @@ export default function Sidebar() {
           Dashboard
         </Link>
         <Link
-          href="/courses"
-          className="block p-2 rounded-lg text-teal-700 hover:bg-gray-100 hover:text-teal-900 transition-colors duration-200"
-        >
-          Courses
-        </Link>
-        <Link
           href="/profile"
           className="block p-2 rounded-lg text-teal-700 hover:bg-gray-100 hover:text-teal-900 transition-colors duration-200"
         >

@@ -4,8 +4,8 @@ export default function QuizHeader({ topic, current, total }) {
       <h2 className="text-xl font-semibold text-black capitalize tracking-wide">
 
          <span className="capitalize text-black">
-    {decodeURIComponent(topic)}
-  </span> Quiz
+            {decodeURIComponent(topic)}
+          </span> Quiz
       </h2>
       <p className="text-sm text-black font-medium">
         Question {current} of {total}

@@ -1,21 +1,25 @@
 const API_KEY = process.env.YOUTUBE_API_KEY;
-const MAX_REQUESTS = 100; // Allow up to 100 searches daily (~10,000 units)
-let requestCount = 0; // Note: In-memory, resets on server restart
 
 export async function fetchYouTubeVideos(topic) {
   if (!API_KEY) {
     throw new Error('YouTube API key is missing. Check your .env file.');
   }
 
-  if (requestCount >= MAX_REQUESTS) {
-    throw new Error('Daily YouTube API quota exceeded. Try again tomorrow.');
+  if (!topic || typeof topic !== 'string' || topic.trim() === '') {
+    throw new Error('Invalid search topic');
   }
+
+  // Append "programming" to ambiguous topics for better relevance
+  const ambiguousTopics = ['string', 'array', 'class', 'object', 'function'];
+  const searchQuery = ambiguousTopics.includes(topic.trim().toLowerCase())
+    ? `${topic.trim()} programming`
+    : topic.trim();
 
   try {
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-        topic
-      )}&key=${API_KEY}&type=video&maxResults=5`,
+        searchQuery
+      )}&key=${API_KEY}&type=video&maxResults=4&relevanceLanguage=en`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -33,17 +37,13 @@ export async function fetchYouTubeVideos(topic) {
     }
 
     const data = await response.json();
-    requestCount++;
-    console.log(`YouTube API request #${requestCount} for topic: ${topic}`);
 
     return data.items.map((item) => ({
       videoUrl: `https://www.youtube.com/watch?v=${item.id.videoId}`,
       videoTitle: item.snippet.title,
-      description: item.snippet.description,
-      thumbnail: item.snippet.thumbnails.medium.url, // Use medium for better quality
+      thumbnail: item.snippet.thumbnails.medium.url,
     }));
   } catch (error) {
-    console.error('YouTube fetch error:', error.message);
     throw error;
   }
 }

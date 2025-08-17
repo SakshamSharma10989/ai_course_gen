@@ -11,31 +11,48 @@ export async function POST(req) {
 
     const safeTopic = topic.trim();
 
-    const prompt = `
-You are a quiz generator. Generate 5 multiple-choice quiz questions on the topic: "${safeTopic}".
+const prompt = `
+You are a quiz generator. Generate 6 multiple-choice quiz questions on the topic: "${safeTopic}".
+The questions must be divided into:
+- 3 EASY questions
+- 2 MEDIUM questions
+- 1 HARD question
+
 Each question must include:
 - A "question" string
 - An "options" array with 4 plain string values
 - An "answer" index (0-based) representing the correct option
+- A "difficulty" string with value "easy", "medium", or "hard"
 - Numeric fields (like "id" and "answer") must NOT have quotes.
 
-Return ONLY valid JSON in this format:
+Return ONLY valid JSON in this exact format:
 {
   "topic": "${safeTopic}",
   "questions": [
     {
       "id": 1,
+      "difficulty": "easy",
       "question": "...",
       "options": ["A", "B", "C", "D"],
       "answer": 2
     },
-    ...
+    {
+      "id": 2,
+      "difficulty": "easy",
+      "question": "...",
+      "options": ["A", "B", "C", "D"],
+      "answer": 1
+    },
+    ... // total 6 questions
   ]
 }
+Make sure there are exactly 3 questions with "easy", 2 with "medium", and 1 with "hard" difficulty.
 `;
 
+
+
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY2}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

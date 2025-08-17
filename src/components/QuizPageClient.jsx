@@ -4,42 +4,24 @@ import { useEffect, useState } from 'react';
 import QuizHeader from '@/components/QuizHeader';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
+import { useAppContext } from '@/app/context/AppContext';
 
 export default function QuizPageClient({ topic }) {
-  const [quizData, setQuizData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { quizData, isLoading, error, generateQuiz, setQuizData, setError } = useAppContext();
+
   const [selectedOptions, setSelectedOptions] = useState({});
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { isSignedIn, user } = useUser();
   const userId = user?.id || null;
+  const router = useRouter();
 
   useEffect(() => {
     if (!topic) {
       setError('No topic provided.');
-      setLoading(false);
       return;
     }
-    const fetchQuiz = async () => {
-      setLoading(true);
-      setError('');
-      setQuizData(null);
-      setSelectedOptions({});
-      try {
-        const res = await fetch('/api/quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to fetch quiz');
-        setQuizData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuiz();
+    setQuizData(null);
+    setSelectedOptions({});
+    generateQuiz();
   }, [topic]);
 
   const handleOptionSelect = (questionId, optionIndex) => {
@@ -51,40 +33,38 @@ export default function QuizPageClient({ topic }) {
 
   const totalQuestions = quizData?.questions?.length || 0;
   const answeredCount = Object.keys(selectedOptions).length;
-
   const correctCount =
     quizData?.questions?.reduce((count, question) => {
       const selected = selectedOptions[question.id];
       return count + (selected === question.answer ? 1 : 0);
     }, 0) || 0;
-   const router = useRouter();
+
   // Save quiz result to backend (MongoDB)
   const handleSubmit = async () => {
     try {
       const res = await fetch('/api/profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        topic,
-        score: correctCount,              // ✅ match backend field name
-        totalQuestions,   
-        userId    // optional Clerk user ID
-      }),
-    });
-
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic,
+          score: correctCount,
+          totalQuestions,
+          userId,
+        }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save result');
 
-      // ✅ No alert here — you could optionally trigger a UI update, redirect, or toast instead
       console.log('✅ Quiz result saved successfully:', data);
-      router.push('/profile'); // Redirect to profile page after saving
+      router.push('/profile');
     } catch (err) {
       console.error('❌ Error saving result:', err.message);
     }
   };
 
-  if (loading) {
+  // UI States
+  if (isLoading) {
     return (
       <div className="p-8 text-center text-lg text-gray-700">
         Loading quiz...
@@ -115,7 +95,7 @@ export default function QuizPageClient({ topic }) {
     <div className="min-h-screen py-10 px-4 bg-gradient-to-b from-white via-sky-100 to-cyan-100 text-gray-900 overflow-x-hidden">
       <div className="max-w-3xl mx-auto w-full">
         <h1 className="text-3xl font-extrabold mb-8 text-center text-teal-700">
-          Quiz 
+          Quiz
         </h1>
 
         <QuizHeader
@@ -124,6 +104,7 @@ export default function QuizPageClient({ topic }) {
           total={totalQuestions}
         />
 
+        {/* Questions */}
         <form className="mt-6 space-y-8" onSubmit={(e) => e.preventDefault()}>
           {quizData.questions.map((q, index) => {
             const selected = selectedOptions[q.id];
@@ -135,6 +116,20 @@ export default function QuizPageClient({ topic }) {
                 key={q.id ?? index}
                 className="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-shadow w-full p-4"
               >
+                {/* Difficulty tag */}
+               <span
+                className={`inline-block px-3 py-1 mb-2 text-xs font-bold rounded-full ${
+                  q.difficulty === 'easy'
+                    ? 'bg-green-200 text-green-800'
+                    : q.difficulty === 'medium'
+                    ? 'bg-yellow-300 text-yellow-900 shadow-md'
+                    : 'bg-red-200 text-red-800'
+                }`}
+              >
+                {q.difficulty.toUpperCase()}
+              </span>
+
+
                 <div className="block w-full text-black font-semibold text-lg mb-4 break-words whitespace-normal">
                   {index + 1}. {q.question}
                 </div>
@@ -148,17 +143,13 @@ export default function QuizPageClient({ topic }) {
                       'flex items-start gap-4 p-4 rounded-lg cursor-pointer border transition-colors w-full break-words whitespace-normal';
 
                     if (optionSelected && isOptionCorrect) {
-                      labelClasses +=
-                        ' bg-green-100 text-green-900 font-semibold border-green-400';
+                      labelClasses += ' bg-green-100 text-green-900 font-semibold border-green-400';
                     } else if (optionSelected && !isOptionCorrect) {
-                      labelClasses +=
-                        ' bg-red-100 text-red-900 font-semibold border-red-400';
+                      labelClasses += ' bg-red-100 text-red-900 font-semibold border-red-400';
                     } else if (isAnswered && !optionSelected && isOptionCorrect) {
-                      labelClasses +=
-                        ' bg-green-50 text-green-700 border-green-300';
+                      labelClasses += ' bg-green-50 text-green-700 border-green-300';
                     } else {
-                      labelClasses +=
-                        ' bg-white hover:bg-gray-100 border-gray-200 text-black';
+                      labelClasses += ' bg-white hover:bg-gray-100 border-gray-200 text-black';
                     }
 
                     return (
@@ -201,6 +192,7 @@ export default function QuizPageClient({ topic }) {
           })}
         </form>
 
+        {/* Footer */}
         <div className="flex items-center justify-between mt-8 px-4 max-w-3xl mx-auto">
           <div className="text-lg font-semibold text-gray-800">
             You scored {correctCount} / {totalQuestions} questions

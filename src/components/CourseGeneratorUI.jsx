@@ -3,9 +3,11 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/app/context/AppContext';
+import { useUser } from '@clerk/nextjs';
 
 export default function CourseGeneratorUI() {
   const router = useRouter();
+  const { user, isSignedIn } = useUser(); // Clerk hook for user and auth state
   const {
     topic,
     setTopic,
@@ -17,6 +19,10 @@ export default function CourseGeneratorUI() {
   } = useAppContext();
 
   async function onGenerateModules() {
+    if (!isSignedIn) {
+      router.push('/sign-in');
+      return;
+    }
     try {
       const moduleId = await generateModules();
       if (moduleId) {
@@ -29,6 +35,10 @@ export default function CourseGeneratorUI() {
   }
 
   async function onGenerateQuiz() {
+    if (!isSignedIn) {
+      router.push('/sign-in');
+      return;
+    }
     try {
       await generateQuiz();
       router.push(`/quiz/${encodeURIComponent(topic)}`);
@@ -39,9 +49,12 @@ export default function CourseGeneratorUI() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-teal-50 text-gray-800 flex flex-col items-center px-4 py-16">
+    <main className="bg-gradient-to-b from-white via-gray-50 to-teal-50 text-gray-800 flex flex-col items-center px-4 py-16 w-full">
       {/* Search Input Form */}
-      <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-xl flex flex-col gap-4 mb-12">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="w-full max-w-xl flex flex-col gap-4 mb-12"
+      >
         <input
           type="text"
           value={topic}
@@ -80,7 +93,9 @@ export default function CourseGeneratorUI() {
           🎓 Create Your Personalized Learning Journey
         </h1>
         <p className="text-gray-700 text-lg mb-8">
-          Discover a powerful tool to design custom courses. Input any subject, and instantly receive a comprehensive curriculum with video lessons, detailed markdown guides, and interactive quizzes—all driven by cutting-edge AI.
+          Discover a powerful tool to design custom courses. Input any subject, and
+          instantly receive a comprehensive curriculum with video lessons, detailed
+          markdown guides, and interactive quizzes—all driven by cutting-edge AI.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
