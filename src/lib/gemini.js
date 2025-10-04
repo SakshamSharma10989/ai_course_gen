@@ -8,10 +8,10 @@ export const generateGeminiContent = async (prompt) => {
   }
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash', // updated version
+    model: 'gemini-2.5-flash',
     generationConfig: {
       responseMimeType: 'application/json',
-      maxOutputTokens: 3000,    // ensure enough tokens for long JSON
+      maxOutputTokens: 3000,    
       temperature: 0.5,         // conservative & deterministic output
     },
   });
