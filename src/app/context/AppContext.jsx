@@ -78,7 +78,7 @@ export function AppContextProvider({ children }) {
   };
 
 const generateQuiz = useCallback(async () => {
-  if (isLoading) return; // ✅ simple guard
+  if (isLoading) return; 
 
   if (!topic.trim()) {
     setError('Please enter a topic to proceed.');

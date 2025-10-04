@@ -8,15 +8,27 @@ export const generateGeminiContent = async (prompt) => {
   }
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash', // updated version
     generationConfig: {
       responseMimeType: 'application/json',
+      maxOutputTokens: 3000,    // ensure enough tokens for long JSON
+      temperature: 0.5,         // conservative & deterministic output
     },
   });
 
-  const result = await model.generateContent(prompt);
-  const rawText = result.response.text();
+  const result = await model.generateContent({
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+  });
 
+  // Safe JSON extraction
+  const rawText = result.response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+  if (!rawText) {
+    console.error('Gemini returned no text:', JSON.stringify(result, null, 2));
+    throw new Error('Empty response from Gemini');
+  }
+
+  // Extract JSON block
   const jsonMatch = rawText.match(/```(?:json)?([\s\S]*?)```|({[\s\S]*})/);
   if (!jsonMatch) {
     throw new Error('No valid JSON block found in Gemini output');
