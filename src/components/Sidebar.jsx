@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useUser, SignOutButton } from '@clerk/clerk-react';
+import { useUser, SignOutButton } from '@clerk/nextjs';
 
 export default function Sidebar() {
   const { user, isLoaded, isSignedIn } = useUser();
