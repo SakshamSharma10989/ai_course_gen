@@ -92,9 +92,9 @@ export default function QuizPageClient({ topic }) {
   }
 
   return (
-    <div className="min-h-screen py-10 px-4 bg-gradient-to-b from-white via-sky-100 to-cyan-100 text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen py-6 px-3 sm:px-4 md:py-10 bg-gradient-to-b from-white via-sky-100 to-cyan-100 text-gray-900 overflow-x-hidden">
       <div className="max-w-3xl mx-auto w-full">
-        <h1 className="text-3xl font-extrabold mb-8 text-center text-teal-700">
+        <h1 className="text-3xl font-extrabold mb-6 md:mb-8 text-center text-teal-700">
           Quiz
         </h1>
 
@@ -193,18 +193,18 @@ export default function QuizPageClient({ topic }) {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-8 px-4 max-w-3xl mx-auto">
-          <div className="text-lg font-semibold text-gray-800">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mt-8 px-0 sm:px-4 max-w-3xl mx-auto">
+          <div className="text-base sm:text-lg font-semibold text-gray-800">
             You scored {correctCount} / {totalQuestions} questions
           </div>
           <button
             type="button"
             disabled={answeredCount !== totalQuestions}
             onClick={handleSubmit}
-            className={`ml-4 rounded bg-teal-600 text-white py-2 px-6 font-semibold transition-opacity ${
+            className={`rounded bg-teal-600 text-white py-2 px-6 font-semibold transition-opacity sm:ml-4 ${
               answeredCount !== totalQuestions
                 ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-teal-700'
+                : 'cursor-pointer hover:bg-teal-700'
             }`}
           >
             Submit

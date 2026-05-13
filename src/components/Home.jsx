@@ -5,7 +5,7 @@ import CourseGeneratorUI from './CourseGeneratorUI';
 
 export default function Home() {
   return (
-    <main className="bg-gray-102 min-h-screen flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-start justify-center px-3 py-6 sm:px-4 md:items-center">
       <CourseGeneratorUI />
     </main>
   );

@@ -49,11 +49,11 @@ export default function CourseGeneratorUI() {
   }
 
   return (
-    <main className="bg-gradient-to-b from-white via-gray-50 to-teal-50 text-gray-800 flex flex-col items-center px-4 py-16 w-full">
+    <main className="bg-gradient-to-b from-white via-gray-50 to-teal-50 text-gray-800 flex flex-col items-center px-3 py-8 w-full sm:px-4 md:py-16">
       {/* Search Input Form */}
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="w-full max-w-xl flex flex-col gap-4 mb-12"
+        className="w-full max-w-xl flex flex-col gap-4 mb-10 md:mb-12"
       >
         <input
           type="text"
@@ -63,12 +63,12 @@ export default function CourseGeneratorUI() {
           className="w-full px-4 py-3 rounded-lg border border-gray-300 shadow focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900 placeholder-gray-500"
           aria-label="Course topic"
         />
-        <div className="flex gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
           <button
             type="button"
             onClick={onGenerateModules}
             disabled={!topic.trim() || isLoading}
-            className={`flex-1 px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition duration-300 font-medium shadow ${
+            className={`flex-1 min-h-11 px-4 py-2 rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 transition duration-300 font-medium shadow ${
               !topic.trim() || isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
@@ -78,7 +78,7 @@ export default function CourseGeneratorUI() {
             type="button"
             onClick={onGenerateQuiz}
             disabled={!topic.trim() || isLoading}
-            className={`flex-1 px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition duration-300 font-medium shadow ${
+            className={`flex-1 min-h-11 px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition duration-300 font-medium shadow ${
               !topic.trim() || isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
@@ -88,16 +88,16 @@ export default function CourseGeneratorUI() {
       </form>
 
       {/* Hero Section & Info Cards */}
-      <section className="text-center max-w-3xl mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-teal-700 mb-4">
+      <section className="text-center max-w-3xl mb-10 md:mb-12">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-teal-700 mb-4">
           🎓 Create Your Personalized Learning Journey
         </h1>
-        <p className="text-gray-700 text-lg mb-8">
+        <p className="text-gray-700 text-base sm:text-lg mb-8">
           Discover a powerful tool to design custom courses. Input any subject, and
           instantly receive a comprehensive curriculum with video lessons, detailed
           markdown guides, and interactive quizzes—all driven by cutting-edge AI.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
           {[
             ['Custom Courses', 'Tailor-made learning paths for any topic.'],
             ['Video Lessons', 'Engaging video content for every module.'],

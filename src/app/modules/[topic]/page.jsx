@@ -57,15 +57,15 @@ export default function ModulePage() {
     );
 
   return (
-    <main className="min-h-screen bg-white text-gray-800 px-6 py-16 max-w-4xl mx-auto">
-      <h1 className="text-4xl font-bold mb-8 text-teal-600">
+    <main className="min-h-screen bg-white text-gray-800 px-4 sm:px-6 py-8 md:py-16 max-w-4xl mx-auto">
+      <h1 className="text-3xl md:text-4xl font-bold mb-8 text-teal-600 break-words">
         {capitalizeTitle(localModuleData.topic)}
       </h1>
       <section>
         {localModuleData.sections && localModuleData.sections.length > 0 ? (
           localModuleData.sections.map((section, i) => (
             <article key={i} className="mb-8">
-              <h2 className="text-2xl font-semibold mb-2">{section.title}</h2>
+              <h2 className="text-xl md:text-2xl font-semibold mb-2 break-words">{section.title}</h2>
               <p className="mb-2 whitespace-pre-wrap">{section.content}</p>
               {section.videoUrl ? (
                 <a
